@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const studentSchema = new Schema({
+    studentuid: { type: String, required: true },
     category: { type: String, required: true },
     schoolname: { type: String, required: true },
     name: { type: String, required: true },
@@ -18,9 +19,11 @@ const studentSchema = new Schema({
     mobile: { type: String, required: true },
     email: { type: String, required: true},
     disability: { type: String, required: true },
-    adhaarno: { type: String, required: true}
+    adhaarno: { type: String, required: true},
+    verification: { type: String, required: true},
+    deleteflag: { type: String, required: true}
 });
 
-const StudentProfile = mongoose.model('Student', studentSchema);
+const Student = mongoose.model('Student', studentSchema);
 
-export default Student;
+export {Student};

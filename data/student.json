@@ -1,0 +1,20 @@
+{
+    "category": "Private",
+    "schoolname": "Greenwood High School, Lakhisarai",
+    "name": "Sivi",
+    "father": "Richard Doe",
+    "mother": "Jane D",
+    "gender": "Male",
+    "nationality": "Indian",
+    "dob": "2000-01-01T00:00:00.000Z",
+    "religion": "Hindu",
+    "caste": "SC",
+    "maritalstatus": "Singles",
+    "area": "Santar",
+    "mobile": "1234567890",
+    "email": "john.doe@example.com",
+    "disability": "None",
+    "adhaarno": "1234-5678-9012",
+    "verification": "auto",
+    "deleteflag": false
+}

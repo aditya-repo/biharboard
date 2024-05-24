@@ -1,0 +1,12 @@
+{
+    "schooluid": "123e4567-e89b-12d3-a456-426614174000",
+    "schoolcode": "SCH12345",
+    "schoolname": "DAV Public School, Patna",
+    "district": "North District",
+    "pincode": "123456",
+    "principal": "John Doe",
+    "mobile": "1234567890",
+    "mobile2": "0987654321",
+    "email": "principal@greenvalleyhigh.edu",
+    "deleted": "false"
+}
