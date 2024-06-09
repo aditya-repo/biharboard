@@ -1,6 +1,6 @@
 {
   "name": "biharboard",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "bihar board registration application",
   "main": "index.js",
   "type": "module",

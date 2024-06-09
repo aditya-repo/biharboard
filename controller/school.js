@@ -201,7 +201,16 @@ const studentPendingDataList = async (req,res)=>{
     });
 }
 
-
+const singleSchoolStudentLists = async (req, res)=>{
+  const {id} = req.params
+  await Student.find({schoolcode:id, deleted: 'false'})
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+}
 
 export {
   allSchoolList, 
@@ -213,5 +222,6 @@ export {
   schoolWithStudentCount,
   schoolWithRawStudentCount,
   studentWithRawData,
-  studentPendingDataList
+  studentPendingDataList,
+  singleSchoolStudentLists
 }
