@@ -1,6 +1,6 @@
 {
   "name": "biharboard",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "bihar board registration application",
   "main": "index.js",
   "type": "module",
@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/aditya-repo/biharboard#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "mongoose": "^8.4.0",

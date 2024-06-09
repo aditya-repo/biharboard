@@ -7,6 +7,7 @@ const schoolSchema = new Schema({
     schoolcode: { type: String, required: true },
     schoolname: { type: String, required: true },
     district: { type: String, required: true },
+    village: { type: String, required: true },
     pincode: { type: String, required: true },
     principal: { type: String, required: true },
     mobile: { type: String, required: true },
