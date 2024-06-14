@@ -5,9 +5,16 @@ import dotenv from "dotenv";
 import { router as studentRouter} from "./routes/student.js"
 import { router as schoolRouter} from "./routes/school.js"
 import { router as dashboardRouter} from "./routes/dashboard.js"
+import { router as imageRouter} from "./routes/image.js"
 import cors from 'cors'
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
+
+// Use fileURLToPath to get the current file name and directory name
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Configuration Data
 const DBURL = process.env.DBURL
@@ -22,11 +29,13 @@ const app = express();
 app.use(express.json())
 app.use(cors())
 app.use(express.urlencoded({extended: false}))
+app.use('/barcode', express.static(path.join(__dirname, 'barcodes')));
 
 // Routes
 app.use('/student' ,studentRouter)
 app.use('/school' ,schoolRouter)
 app.use('/dashboard' ,dashboardRouter)
+app.use('/image' ,imageRouter)
 
 // Application started
 app.listen(4040, () => {

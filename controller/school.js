@@ -2,6 +2,7 @@ import SchoolProfile from "../model/school.js";
 import { v4 as uuidv4 } from 'uuid';
 import { Student } from "../model/student.js";
 import RawData from "../model/rawstudent.js";
+import { barcodeGenrator } from "../service/library.js";
 
 const allSchoolList = async (req, res) => {
     try {
@@ -212,6 +213,13 @@ const singleSchoolStudentLists = async (req, res)=>{
     });
 }
 
+const generateBarcode = (req, res)=> {
+  const {id} = req.params
+  const response = barcodeGenrator(id)
+  console.log(response);
+  res.json(response)
+}
+
 export {
   allSchoolList, 
   insertSchool, 
@@ -223,5 +231,6 @@ export {
   schoolWithRawStudentCount,
   studentWithRawData,
   studentPendingDataList,
-  singleSchoolStudentLists
+  singleSchoolStudentLists,
+  generateBarcode
 }
