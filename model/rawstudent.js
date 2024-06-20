@@ -40,6 +40,7 @@ const RawStudentSchema = new Schema({
   optional: { type: String },
   vocational: { type: String },
   approval: { type: String },
+  correction: {type: [String]},
   deleted: { type: Boolean, default: false },
 }, { timestamps: true });
 

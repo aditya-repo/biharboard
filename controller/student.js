@@ -40,8 +40,6 @@ const singleStudent = async (req, res) => {
 
 const insertStudent = async (req, res) => {
     let data = req.body
-    // const uniqueId = uuidv4();
-    // data = {...data, studentuid: uniqueId}
     try {
         const student = new Student(data)
         await student.save()
