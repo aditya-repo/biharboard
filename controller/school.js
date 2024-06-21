@@ -103,7 +103,7 @@ const schoolWithStudentCount = async (req,res)=>{
   await SchoolProfile.aggregate([
     {
       $lookup: {
-        from: 'students', // The collection to join
+        from: 'rawdatas', // The collection to join
         localField: 'schoolcode', // Field from the school collection
         foreignField: 'schoolcode', // Field from the student collection
         as: 'students', // The name of the array field to add to each output document
@@ -111,28 +111,12 @@ const schoolWithStudentCount = async (req,res)=>{
     },
     {
       $addFields: {
-        studentCount: { $size: '$students' }, // Add a field for the number of students
-        autoCount: {
+        studentCount: {
           $size: {
             $filter: {
               input: '$students',
-              cond: { $eq: ['$$this.approval', 'auto'] },
-            },
-          },
-        },
-        arrovedCount: {
-          $size: {
-            $filter: {
-              input: '$students',
-              cond: { $eq: ['$$this.approval', 'true'] },
-            },
-          },
-        },
-        pendingCount: {
-          $size: {
-            $filter: {
-              input: '$students',
-              cond: { $eq: ['$$this.approval', 'false'] },
+              as: 'student',
+              cond: { $eq: ['$$student.isImported', "false"] }, // Filter students where isImported is false
             },
           },
         },
@@ -142,7 +126,7 @@ const schoolWithStudentCount = async (req,res)=>{
       $project: {
         students: 0, // Exclude the students array from the result
       },
-    },
+    }
   ])
     .then((result) => {
       res.json(result);
@@ -151,26 +135,34 @@ const schoolWithStudentCount = async (req,res)=>{
       console.error(err);
     });
 }
-const schoolWithRawStudentCount = async (req,res)=>{
+const schoolWithRawStudentCountImportTrue = async (req,res)=>{
     await SchoolProfile.aggregate([
-      {
-        $lookup: {
-          from: 'rawdatas', // The collection to join
-          localField: 'schoolcode', // Field from the school collection
-          foreignField: 'schoolcode', // Field from the student collection
-          as: 'students', // The name of the array field to add to each output document
+        {
+          $lookup: {
+            from: 'rawdatas', // The collection to join
+            localField: 'schoolcode', // Field from the school collection
+            foreignField: 'schoolcode', // Field from the student collection
+            as: 'students', // The name of the array field to add to each output document
+          },
         },
-      },
-      {
-        $addFields: {
-          studentCount: { $size: '$students' }, // Add a field for the number of students
+        {
+          $addFields: {
+            studentCount: {
+              $size: {
+                $filter: {
+                  input: '$students',
+                  as: 'student',
+                  cond: { $eq: ['$$student.isImported', "true"] }, // Filter students where isImported is false
+                },
+              },
+            },
+          },
         },
-      },
-      {
-        $project: {
-          students: 0, // Exclude the students array from the result
-        },
-      },
+        {
+          $project: {
+            students: 0, // Exclude the students array from the result
+          },
+        }
     ])
       .then((result) => {
         res.json(result);
@@ -180,9 +172,57 @@ const schoolWithRawStudentCount = async (req,res)=>{
       });
 }
 
-const studentWithRawData = async (req,res)=>{
+const schoolWithRawStudentCountImportFalse = async (req,res)=>{
+  await SchoolProfile.aggregate([
+    {
+      $lookup: {
+        from: 'rawdatas', // The collection to join
+        localField: 'schoolcode', // Field from the school collection
+        foreignField: 'schoolcode', // Field from the student collection
+        as: 'students', // The name of the array field to add to each output document
+      },
+    },
+    {
+      $addFields: {
+        studentCount: {
+          $size: {
+            $filter: {
+              input: '$students',
+              as: 'student',
+              cond: { $eq: ['$$student.isImported', "false"] }, // Filter students where isImported is false
+            },
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        students: 0, // Exclude the students array from the result
+      },
+    }
+  ])
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+}
+
+const studentWithRawDataImportedTrue = async (req,res)=>{
   const {id} = req.params
-  await RawData.find({schoolcode:id})
+  await RawData.find({schoolcode:id, isImported: 'true'})
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+}
+
+const studentWithRawDataImportedFalse = async (req,res)=>{
+  const {id} = req.params
+  await RawData.find({schoolcode:id, isImported: 'false'})
     .then((result) => {
       res.json(result);
     })
@@ -228,8 +268,10 @@ export {
   deleteSchool, 
   schoolWithStudentTotalData, 
   schoolWithStudentCount,
-  schoolWithRawStudentCount,
-  studentWithRawData,
+  schoolWithRawStudentCountImportFalse,
+  schoolWithRawStudentCountImportTrue,
+  studentWithRawDataImportedTrue,
+  studentWithRawDataImportedFalse,
   studentPendingDataList,
   singleSchoolStudentLists,
   generateBarcode

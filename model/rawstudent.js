@@ -41,6 +41,7 @@ const RawStudentSchema = new Schema({
   vocational: { type: String },
   approval: { type: String },
   correction: {type: [String]},
+  isImported: {type: String, default: false},
   deleted: { type: Boolean, default: false },
 }, { timestamps: true });
 

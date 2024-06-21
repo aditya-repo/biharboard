@@ -1,3 +1,4 @@
+import RawData from "../model/rawstudent.js";
 import SchoolProfile from "../model/school.js";
 import { Student } from "../model/student.js"
 // import { v4 as uuidv4 } from 'uuid';
@@ -28,7 +29,7 @@ const allStudent = async (req, res) => {
 const singleStudent = async (req, res) => {
     const query = { studentuid: req.params.id ,deleted: "false"}
     try {
-        let r = await Student.findOne(query)
+        let r = await RawData.findOne(query)
         if (!r) {
             return res.status(404).json({ "message": "user not found", "statuscode": "404" })
         }
@@ -52,14 +53,18 @@ const insertStudent = async (req, res) => {
 const updateStudent = async (req, res) => {
     const studentuid = req.params.id
     const data = req.body
+    console.log(data.schoolname);
+
     try {
-        const response = await Student.findOneAndUpdate({ studentuid ,deleteflag: false}, data, {new:true})
+        const response = await RawData.findOneAndUpdate({ studentuid }, data, {new:true})
+        console.log(response);
         if (!response) {
             return res.status(400).json({ "message": "Student not found" })
         }
         res.json(response).status(200)
     } catch (error) {
         res.status(500).json({ "message": "Something went wrong", "errorMessage": error })
+        console.log(response);
     }
 }
 
@@ -103,7 +108,7 @@ const pendingReview = async (req,res)=>{
         },
         {
           $project: {
-            _id: 1, // Include specific fields from SchoolProfile model
+            _id: 1,
             schooluid: 1,
             schoolcode: 1,
             schoolname: 1,
@@ -142,5 +147,12 @@ const pendingStudentProfile = async (req, res)=>{
             console.error(err);
           }
     }
+
+    const importRawtoStudent = async (req,res)=>{
+      const data = await RawData.find({isImported: false})
+      
+      console.log(data);
+      res.json(data)
+    }
   
-export { insertStudent, allStudent, singleStudent, updateStudent, deleteStudent, pendingReview, pendingStudentProfile }
+export { insertStudent, allStudent, singleStudent, updateStudent, deleteStudent, pendingReview, pendingStudentProfile, importRawtoStudent }
