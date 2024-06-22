@@ -30,6 +30,10 @@ const insertSchool = async (req, res) => {
     let data = req.body
     const uniqueId = uuidv4();
     data = {...data, schooluid: uniqueId}
+    barcodeGenrator(`${data.schoolcode}1`)
+    barcodeGenrator(`${data.schoolcode}2`)
+    barcodeGenrator(`${data.schoolcode}3`)
+    barcodeGenrator(`${data.schoolcode}4`)
     try {
         const school = new SchoolProfile(data)
         await school.save()
@@ -233,7 +237,7 @@ const studentWithRawDataImportedFalse = async (req,res)=>{
 
 const studentPendingDataList = async (req,res)=>{
   const {id} = req.params
-  await RawData.find({schoolcode:id,approval: 'false', deleted: 'false'})
+  await Student.find({schoolcode:id,approval: 'false', deleted: 'false'})
     .then((result) => {
       res.json(result);
     })
@@ -260,6 +264,36 @@ const generateBarcode = (req, res)=> {
   res.json(response)
 }
 
+const importRawDatatoStudentTable = async(req, res)=>{
+  const response = await RawData.find({isImported: "false", deleted: "false"})
+
+  await RawData.updateMany({ isImported: "false", deleted: "false" },{ $set: { isImported: "true" } })
+
+      function convertToSimpleArray(array) {
+        // Initialize an empty array to store the transformed objects
+        const newArray = [];
+      
+        // Iterate over each object in the input array
+        array.forEach(mongooseObj => {
+          // Extract the plain JavaScript object without Mongoose internals
+          const plainObj = mongooseObj.toObject({ virtuals: true });
+          
+          // Destructure _id from the object and exclude it from the new object
+          const { _id, ...newObj } = plainObj;
+      
+          // Push the modified object (without _id) into the new array
+          newArray.push(newObj);
+        });
+  
+    return newArray;
+      }
+
+  const modifieddata = convertToSimpleArray(response)
+  await Student.insertMany(modifieddata)
+  res.json(modifieddata)
+  // res.json({message: "imported"})
+}
+
 export {
   allSchoolList, 
   insertSchool, 
@@ -274,5 +308,6 @@ export {
   studentWithRawDataImportedFalse,
   studentPendingDataList,
   singleSchoolStudentLists,
-  generateBarcode
+  generateBarcode,
+  importRawDatatoStudentTable
 }

@@ -40,6 +40,7 @@ const studentSchema = new Schema({
     optional: { type: String },
     vocational: { type: String },
     approval: { type: String },
+    manualapproval: { type: Boolean , default: false },
     deleted: { type: String },
 });
 

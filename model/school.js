@@ -4,16 +4,16 @@ const Schema = mongoose.Schema;
 
 const schoolSchema = new Schema({
     schooluid: { type: String, required: true },
-    schoolcode: { type: String, required: true },
-    schoolname: { type: String, required: true },
-    district: { type: String, required: true },
-    village: { type: String, required: true },
-    pincode: { type: String, required: true },
-    principal: { type: String, required: true },
-    mobile: { type: String, required: true },
-    mobile2: { type: String, required: true },
-    email: { type: String, required: true },
-    deleted: { type: String, required: true },
+    schoolcode: { type: String},
+    schoolname: { type: String},
+    district: { type: String},
+    village: { type: String},
+    pincode: { type: String},
+    principal: { type: String},
+    mobile: { type: String},
+    mobile2: { type: String},
+    email: { type: String},
+    deleted: { type: String, required: true, default: "false" },
 }, { timestamps: true });
 
 const SchoolProfile = mongoose.model('School', schoolSchema);

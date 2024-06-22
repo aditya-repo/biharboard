@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 
-const database = async (DBURL)=>{
+const database = async (DBURL) => {
     try {
         await mongoose.connect(DBURL)
         console.log("Database Connected Successfully");
@@ -10,4 +10,4 @@ const database = async (DBURL)=>{
     }
 }
 
-export {database}
+export { database }
