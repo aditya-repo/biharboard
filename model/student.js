@@ -39,6 +39,7 @@ const studentSchema = new Schema({
     visualimpared: { type: String },
     optional: { type: String },
     vocational: { type: String },
+    correction: {type: [String]},
     approval: { type: String },
     manualapproval: { type: Boolean , default: false },
     deleted: { type: String },
