@@ -20,6 +20,7 @@ const studentSchema = new Schema({
     caste: { type: String },
     nationality: { type: String },
     disability: { type: String },
+    disabilityreason: { type: String },
     religion: { type: String },
     area: { type: String },
     maritalstatus: { type: String },
@@ -40,8 +41,7 @@ const studentSchema = new Schema({
     optional: { type: String },
     vocational: { type: String },
     correction: {type: [String]},
-    approval: { type: String },
-    manualapproval: { type: Boolean , default: false },
+    approval:  { type: String, enum: ['true', 'false', 'auto']},
     deleted: { type: String },
 });
 

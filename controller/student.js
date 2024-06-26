@@ -56,7 +56,7 @@ const updateStudent = async (req, res) => {
 
   try {
     const response = await Student.findOneAndUpdate({ studentuid }, data, { new: true })
-    console.log(response);
+    console.log(data);
     if (!response) {
       return res.status(400).json({ "message": "Student not found" })
     }
@@ -177,9 +177,7 @@ const studentWithApprovalStatusAndFormType = async (req, res) => {
 }
 
 // const manuallyApproveStudentData = async (req, res) => {
-
 //   const studentuid = req.params.id
-
 //   const data = {
 //     manualapproval: true,
 //     approval: "true"
