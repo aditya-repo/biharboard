@@ -1,17 +1,17 @@
 import RawData from "../model/rawstudent.js";
 import SchoolProfile from "../model/school.js";
-import { Student } from "../model/student.js"
+import { Student } from "../model/student.js";
 // import { v4 as uuidv4 } from 'uuid';
 
 const allStudent = async (req, res) => {
   try {
-    const response = await Student.find({ deleted: "false" })
+    const response = await Student.find({ deleted: "false" });
     // console.log(response);
-    res.status(200).json(response)
+    res.status(200).json(response);
   } catch (error) {
-    res.status(500).send(error)
+    res.status(500).send(error);
   }
-}
+};
 
 // const singleStudent = async (req, res) => {
 //     const query = { studentuid: req.params.id ,deleted: false}
@@ -27,79 +27,105 @@ const allStudent = async (req, res) => {
 //     }
 // }
 const singleStudent = async (req, res) => {
-  const query = { studentuid: req.params.id, deleted: "false" }
+  const query = { studentuid: req.params.id, deleted: "false" };
   try {
-    let r = await Student.findOne(query)
+    let r = await Student.findOne(query);
     if (!r) {
-      return res.status(404).json({ "message": "user not found", "statuscode": "404" })
+      return res
+        .status(404)
+        .json({ message: "user not found", statuscode: "404" });
     }
-    res.status(200).json(r)
+    res.status(200).json(r);
   } catch (error) {
-    res.status(500).json({ "message": "Something went wrong", "errorMessage": error })
+    res
+      .status(500)
+      .json({ message: "Something went wrong", errorMessage: error });
   }
-}
+};
 
 const insertStudent = async (req, res) => {
-  let data = req.body
-  try {
-    const student = new Student(data)
-    await student.save()
-    res.status(200).json(student)
-  } catch (error) {
-    res.status(500).json({ "message": "Something went wrong", "errorMessage": error })
-  }
-}
+  let data = req.body;
+  // try {
+  //   const student = new RawData(data)
+  //   await student.save()
+  //   res.status(200).json(student)
+  // } catch (error) {
+  //   res.status(500).json({ "message": "Something went wrong", "errorMessage": error })
+  // }
+  RawData.insertMany(data)
+    .then((docs) => {
+      console.log("Documents inserted:", docs);
+      res.status(200).json({ message: "success" });
+    })
+    .catch((err) => {
+      console.error("Error inserting documents:", err);
+    });
+};
 
 const updateStudent = async (req, res) => {
-  const studentuid = req.params.id
-  const data = req.body
+  const studentuid = req.params.id;
+  const data = req.body;
 
   try {
-    const response = await Student.findOneAndUpdate({ studentuid }, data, { new: true })
+    const response = await Student.findOneAndUpdate({ studentuid }, data, {
+      new: true,
+    });
     console.log(data);
     if (!response) {
-      return res.status(400).json({ "message": "Student not found" })
+      return res.status(400).json({ message: "Student not found" });
     }
-    res.json(response).status(200)
+    res.json(response).status(200);
   } catch (error) {
-    res.status(500).json({ "message": "Something went wrong", "errorMessage": error })
-    console.log(response);
+    res
+      .status(500)
+      .json({ message: "Something went wrong", errorMessage: error });
+    console.log(error);
   }
-}
+};
 
 const deleteStudent = async (req, res) => {
-  const studentuid = req.params.id
-  const changeFlag = { deleteflag: "true" }
+  const studentuid = req.params.id;
+  const changeFlag = { deleteflag: "true" };
 
   try {
-    const response = await Student.findOneAndUpdate({ studentuid, deleteflag: false }, changeFlag)
+    const response = await Student.findOneAndUpdate(
+      { studentuid, deleteflag: false },
+      changeFlag
+    );
     if (!response) {
-      return res.status(400).json({ "message": "Student not found" })
+      return res.status(400).json({ message: "Student not found" });
     }
-    res.status(200).json({ "message": "Student deleted successfuly" })
+    res.status(200).json({ message: "Student deleted successfuly" });
   } catch (error) {
-    res.status(500).json({ "message": "Something went wrong", "errorMessage": error })
+    res
+      .status(500)
+      .json({ message: "Something went wrong", errorMessage: error });
   }
-}
+};
 
 const pendingReview = async (req, res) => {
   const response = await SchoolProfile.aggregate([
     {
       $lookup: {
-        from: 'students',
-        localField: 'schoolcode',
-        foreignField: 'schoolcode',
-        as: 'students',
+        from: "students",
+        localField: "schoolcode",
+        foreignField: "schoolcode",
+        as: "students",
       },
     },
     {
       $addFields: {
-        studentCount: { $size: '$students' },
+        studentCount: { $size: "$students" },
         pendingCount: {
           $size: {
             $filter: {
-              input: '$students',
-              cond: { $and: [{ $eq: ['$$this.approval', 'false'] }, { $eq: ['$$this.deleted', 'false'] }] },
+              input: "$students",
+              cond: {
+                $and: [
+                  { $eq: ["$$this.approval", "false"] },
+                  { $eq: ["$$this.deleted", "false"] },
+                ],
+              },
             },
           },
         },
@@ -130,14 +156,14 @@ const pendingReview = async (req, res) => {
   } catch (err) {
     console.error(err);
   }
-}
+};
 
 const pendingStudentProfile = async (req, res) => {
-  const { id } = req.params
+  const { id } = req.params;
   const pendingStudents = await Student.find({
-    approval: 'false',
-    deleted: 'false',
-    studentuid: id
+    approval: "false",
+    deleted: "false",
+    studentuid: id,
   });
 
   try {
@@ -145,36 +171,38 @@ const pendingStudentProfile = async (req, res) => {
   } catch (err) {
     console.error(err);
   }
-}
+};
 
 const importRawtoStudent = async (req, res) => {
-  const data = await RawData.find({ isImported: false })
+  const data = await RawData.find({ isImported: false });
 
   console.log(data);
-  res.json(data)
-}
+  res.json(data);
+};
 
 const studentWithApprovalStatus = async (req, res) => {
-  const approvaltype = req.params.id
-  const data = await Student.find({ deleted: "false", approval: approvaltype })
-  res.json(data)
-}
+  const approvaltype = req.params.id;
+  const data = await Student.find({ deleted: "false", approval: approvaltype });
+  res.json(data);
+};
 
 const studentWithFormType = async (req, res) => {
-  const formtype = req.params.id
-  const data = await Student.find({ deleted: "false", formtype: formtype })
+  const formtype = req.params.id;
+  const data = await Student.find({ deleted: "false", formtype: formtype });
 
-  res.json(data)
-
-}
+  res.json(data);
+};
 const studentWithApprovalStatusAndFormType = async (req, res) => {
-  const approvalid = req.params.approvalid
-  const formid = req.params.formid
+  const approvalid = req.params.approvalid;
+  const formid = req.params.formid;
   console.log(approvalid, formid);
-  const data = await Student.find({ deleted: "false", formtype: formid, approval: approvalid })
-  res.json(data)
-
-}
+  const data = await Student.find({
+    deleted: "false",
+    formtype: formid,
+    approval: approvalid,
+  });
+  res.json(data);
+};
 
 // const manuallyApproveStudentData = async (req, res) => {
 //   const studentuid = req.params.id
@@ -187,5 +215,16 @@ const studentWithApprovalStatusAndFormType = async (req, res) => {
 //   res.json({message: "request placed"})
 // }
 
-export { insertStudent, allStudent, singleStudent, updateStudent, deleteStudent, pendingReview, pendingStudentProfile, importRawtoStudent, studentWithApprovalStatus, studentWithFormType, studentWithApprovalStatusAndFormType,
- }
+export {
+  insertStudent,
+  allStudent,
+  singleStudent,
+  updateStudent,
+  deleteStudent,
+  pendingReview,
+  pendingStudentProfile,
+  importRawtoStudent,
+  studentWithApprovalStatus,
+  studentWithFormType,
+  studentWithApprovalStatusAndFormType,
+};
